@@ -1,0 +1,53 @@
+
+class PromiseAPI{
+ 
+    constructor(resolver){
+       this.promiseState= "PENDING"
+       this.promiseResult = {}
+       resolver(this.resolve.bind(this),this.reject.bind(this))
+   }
+   
+    resolve(res){
+        console.log("----------Executing resolver----------")
+        this.promiseResult = res;
+        this.promiseState = "COMPLETED"
+        return res;
+    }
+    
+    reject(err){
+        console.log("----------Executing reject----------")
+        this.promiseState= "REJECTED"
+        return err;
+    }
+    
+    then(onSuccess,onError){
+        console.log("----------Executing Then----------")
+        console.log("Value received is ",this.promiseResult)
+        
+        
+        // Creating another Promise.
+        const value = onSuccess(this.promiseResult);
+        if(value instanceof PromiseAPI){
+            return value;
+        }
+        return new PromiseAPI((resolve,reject) => {resolve(value)})
+    }
+    
+    catch(onError){
+        
+    }
+    
+   
+  
+}
+
+promise = new PromiseAPI( (resolve,reject) => resolve("hello") );
+
+promise.then(data => {
+    return 1;
+}).then(data => {
+    return new PromiseAPI((resolve,reject) => {resolve("new Promise")})
+}).then(data => {
+    console.log(data)
+});
+
